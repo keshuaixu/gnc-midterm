@@ -26,3 +26,8 @@ octave-workspace
 *.autosave
 
 # End of https://www.gitignore.io/api/matlab
+
+html/
+!html/*.pdf
+!html/*.png
+!html/*.jpg

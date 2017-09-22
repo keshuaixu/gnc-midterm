@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>GNC midterm</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-09-21"><meta name="DC.source" content="midterm.m"><style type="text/css">
+      --><title>GNC midterm</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-09-22"><meta name="DC.source" content="midterm.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,52 +66,125 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>GNC midterm</h1><!--introduction--><p>Keshuai Xu</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Problem 1</a></li><li><a href="#2">Problem 2</a></li><li><a href="#3">2.1</a></li><li><a href="#4">2.2</a></li><li><a href="#5">2.3</a></li></ul></div><h2>Problem 1<a name="1"></a></h2><p>1. ??? 2. True 3. True 4. False 5. False 6.</p><h2>Problem 2<a name="2"></a></h2><p>Variable naming conventions: R_subscript_superscript</p><pre class="codeinput">clear <span class="string">variables</span>
-syms <span class="string">psi</span> <span class="string">theta</span> <span class="string">phi</span>
+  </style></head><body><div class="content"><h1>GNC midterm</h1><!--introduction--><p>Keshuai Xu</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Problem 1</a></li><li><a href="#2">Problem 2</a></li><li><a href="#3">2.1</a></li><li><a href="#4">2.2</a></li><li><a href="#5">2.3</a></li><li><a href="#6">2.4</a></li><li><a href="#7">2.5</a></li><li><a href="#8">2.6</a></li><li><a href="#9">2.7</a></li></ul></div><h2>Problem 1<a name="1"></a></h2><p>1. ??? 2. True 3. True 4. False 5. False 6.</p><h2>Problem 2<a name="2"></a></h2><p>Variable naming conventions: R_subscript_superscript x_d is dx/dt. x_dd is d(x_d)/dt.</p><pre class="codeinput">clear <span class="string">variables</span>
+syms <span class="string">psi</span> <span class="string">theta</span> <span class="string">phi</span> <span class="string">psi_d</span> <span class="string">theta_d</span> <span class="string">phi_d</span> <span class="string">real</span>
 </pre><h2>2.1<a name="3"></a></h2><pre class="codeinput"><span class="comment">% x rotation psi</span>
 R_i_a = [1 0 0;
-         0 cos(psi) -sin(psi);
-         0 sin(psi) cos(psi)]
+         0 cos(psi) sin(psi);
+         0 -sin(psi) cos(psi)]
 
 <span class="comment">% y rotation theta</span>
-R_a_b = [cos(theta) 0 sin(theta);
+R_a_b = [cos(theta) 0 -sin(theta);
          0 1 0;
-         -sin(theta) 0 cos(theta)]
+         sin(theta) 0 cos(theta)]
 
 <span class="comment">% z rotation phi</span>
-R_b_e = [cos(phi) -sin(phi) 0;
-         sin(phi) cos(phi) 0;
+R_b_e = [cos(phi) sin(phi) 0;
+         -sin(phi) cos(phi) 0;
          0 0 1]
 </pre><pre class="codeoutput"> 
 R_i_a =
  
-[ 1,        0,         0]
-[ 0, cos(psi), -sin(psi)]
-[ 0, sin(psi),  cos(psi)]
+[ 1,         0,        0]
+[ 0,  cos(psi), sin(psi)]
+[ 0, -sin(psi), cos(psi)]
  
  
 R_a_b =
  
-[  cos(theta), 0, sin(theta)]
-[           0, 1,          0]
-[ -sin(theta), 0, cos(theta)]
+[ cos(theta), 0, -sin(theta)]
+[          0, 1,           0]
+[ sin(theta), 0,  cos(theta)]
  
  
 R_b_e =
  
-[ cos(phi), -sin(phi), 0]
-[ sin(phi),  cos(phi), 0]
-[        0,         0, 1]
+[  cos(phi), sin(phi), 0]
+[ -sin(phi), cos(phi), 0]
+[         0,        0, 1]
  
 </pre><h2>2.2<a name="4"></a></h2><pre class="codeinput">R_i_e = R_b_e * R_a_b * R_i_a
 </pre><pre class="codeoutput"> 
 R_i_e =
  
-[ cos(phi)*cos(theta), cos(phi)*sin(psi)*sin(theta) - cos(psi)*sin(phi), sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta)]
-[ cos(theta)*sin(phi), cos(phi)*cos(psi) + sin(phi)*sin(psi)*sin(theta), cos(psi)*sin(phi)*sin(theta) - cos(phi)*sin(psi)]
-[         -sin(theta),                              cos(theta)*sin(psi),                              cos(psi)*cos(theta)]
+[  cos(phi)*cos(theta), cos(psi)*sin(phi) + cos(phi)*sin(psi)*sin(theta), sin(phi)*sin(psi) - cos(phi)*cos(psi)*sin(theta)]
+[ -cos(theta)*sin(phi), cos(phi)*cos(psi) - sin(phi)*sin(psi)*sin(theta), cos(phi)*sin(psi) + cos(psi)*sin(phi)*sin(theta)]
+[           sin(theta),                             -cos(theta)*sin(psi),                              cos(psi)*cos(theta)]
  
-</pre><h2>2.3<a name="5"></a></h2><p><img src="midterm_eq07554572315925607019.png" alt="$$\vec{\omega}_{ie}^{e} = R_b^e R_a^b \vec{\omega}_{ia}^{a} + R_b^e \vec{\omega}_{ab}^{b} + \vec{\omega}_{be}^{e}$$"></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+</pre><h2>2.3<a name="5"></a></h2><p><img src="midterm_eq16897228568387265169.png" alt="$$\vec{\omega}_{ie}^{e} = R_b^e R_a^b \vec{\omega}_{ia}^{a} + R_b^e \vec{\omega}_{ab}^{b} + I \vec{\omega}_{be}^{e}$$"></p><h2>2.4<a name="6"></a></h2><pre class="codeinput">omega_ia_a = [psi_d 0 0]'
+omega_ab_b = [0 theta_d 0]'
+omega_be_e = [0 0 phi_d]'
+</pre><pre class="codeoutput"> 
+omega_ia_a =
+ 
+ psi_d
+     0
+     0
+ 
+ 
+omega_ab_b =
+ 
+       0
+ theta_d
+       0
+ 
+ 
+omega_be_e =
+ 
+     0
+     0
+ phi_d
+ 
+</pre><h2>2.5<a name="7"></a></h2><pre class="codeinput">omega_ie_e = R_b_e * R_a_b * omega_ia_a + R_b_e * omega_ab_b + omega_be_e
+
+<span class="comment">% ANSWER - the part to fill in the blank</span>
+H_123_e = [cos(phi)*cos(theta) sin(phi) 0;
+           -cos(theta)*sin(phi) cos(phi) 0;
+           sin(theta) 0 1]
+</pre><pre class="codeoutput"> 
+omega_ie_e =
+ 
+ theta_d*sin(phi) + psi_d*cos(phi)*cos(theta)
+ theta_d*cos(phi) - psi_d*cos(theta)*sin(phi)
+                     phi_d + psi_d*sin(theta)
+ 
+ 
+H_123_e =
+ 
+[  cos(phi)*cos(theta), sin(phi), 0]
+[ -cos(theta)*sin(phi), cos(phi), 0]
+[           sin(theta),        0, 1]
+ 
+</pre><h2>2.6<a name="8"></a></h2><p>ANSWER - the part to fill in the blank</p><p><img src="midterm_eq16501161851640142520.png" alt="$$\vec{\omega}_{ie}^i = \underline{(\cos{\theta})^{-1} B} \vec{\omega}_{ie}^e$$"></p><pre class="codeinput"><span class="comment">% intermediate step and verify 2.5</span>
+omega_ie_i = H_123_e \ omega_ie_e
+
+<span class="comment">% the whole thing</span>
+omega_ie_i_left = simplify(inv(H_123_e))
+
+<span class="comment">% B part of the answer</span>
+B = simplify(omega_ie_i_left * cos(theta))
+</pre><pre class="codeoutput"> 
+omega_ie_i =
+ 
+   psi_d
+ theta_d
+   phi_d
+ 
+ 
+omega_ie_i_left =
+ 
+[               cos(phi)/cos(theta),             -sin(phi)/cos(theta), 0]
+[                          sin(phi),                         cos(phi), 0]
+[ -(cos(phi)*sin(theta))/cos(theta), (sin(phi)*sin(theta))/cos(theta), 1]
+ 
+ 
+B =
+ 
+[             cos(phi),           -sin(phi),          0]
+[  cos(theta)*sin(phi), cos(phi)*cos(theta),          0]
+[ -cos(phi)*sin(theta), sin(phi)*sin(theta), cos(theta)]
+ 
+</pre><h2>2.7<a name="9"></a></h2><p>quantity measured by gyro: <img src="midterm_eq06947348534853178665.png" alt="$$\vec{\omega}_{ie}^e$">$ euler321_kinematics =</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% GNC midterm
 % Keshuai Xu
@@ -126,32 +199,69 @@ R_i_e =
 
 %% Problem 2
 % Variable naming conventions: R_subscript_superscript
+% x_d is dx/dt. x_dd is d(x_d)/dt. 
 
 clear variables
-syms psi theta phi
+syms psi theta phi psi_d theta_d phi_d real
 
 %% 2.1
 
 % x rotation psi
 R_i_a = [1 0 0;
-         0 cos(psi) -sin(psi);
-         0 sin(psi) cos(psi)]
+         0 cos(psi) sin(psi);
+         0 -sin(psi) cos(psi)]
      
 % y rotation theta
-R_a_b = [cos(theta) 0 sin(theta);
+R_a_b = [cos(theta) 0 -sin(theta);
          0 1 0;
-         -sin(theta) 0 cos(theta)]
+         sin(theta) 0 cos(theta)]
      
 % z rotation phi
-R_b_e = [cos(phi) -sin(phi) 0;
-         sin(phi) cos(phi) 0;
+R_b_e = [cos(phi) sin(phi) 0;
+         -sin(phi) cos(phi) 0;
          0 0 1]
 
 %% 2.2
 R_i_e = R_b_e * R_a_b * R_i_a
 
 %% 2.3
-% $$\vec{\omega}_{ie}^{e} = R_b^e R_a^b \vec{\omega}_{ia}^{a} + R_b^e \vec{\omega}_{ab}^{b} + \vec{\omega}_{be}^{e}$$
+% $$\vec{\omega}_{ie}^{e} = R_b^e R_a^b \vec{\omega}_{ia}^{a} + R_b^e \vec{\omega}_{ab}^{b} + I \vec{\omega}_{be}^{e}$$
+
+%% 2.4
+omega_ia_a = [psi_d 0 0]'
+omega_ab_b = [0 theta_d 0]'
+omega_be_e = [0 0 phi_d]'
+
+%% 2.5
+omega_ie_e = R_b_e * R_a_b * omega_ia_a + R_b_e * omega_ab_b + omega_be_e
+
+% ANSWER - the part to fill in the blank
+H_123_e = [cos(phi)*cos(theta) sin(phi) 0;
+           -cos(theta)*sin(phi) cos(phi) 0;
+           sin(theta) 0 1]
+
+%% 2.6
+% ANSWER - the part to fill in the blank
+%
+% $$\vec{\omega}_{ie}^i = \underline{(\cos{\theta})^{-1} B} \vec{\omega}_{ie}^e$$
+%
+
+% intermediate step and verify 2.5
+omega_ie_i = H_123_e \ omega_ie_e
+
+% the whole thing
+omega_ie_i_left = simplify(inv(H_123_e))
+
+% B part of the answer
+B = simplify(omega_ie_i_left * cos(theta))
+
+
+%% 2.7
+% quantity measured by gyro: $$\vec{\omega}_{ie}^e$$
+% euler321_kinematics = 
+
+
+
 
 
 ##### SOURCE END #####
