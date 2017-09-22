@@ -188,8 +188,44 @@ figure();
 plot3(y_4(:,4),y_4(:,5),y_4(:,6));
 title('position trajectory');
 
+%% 5
+clear variables
+syms psi theta alpha beta real
 
+% x rotation psi
+R_i_a = [1 0 0;
+         0 cos(psi) sin(psi);
+         0 -sin(psi) cos(psi)];
+     
+% y rotation theta
+R_a_b = [cos(theta) 0 -sin(theta);
+         0 1 0;
+         sin(theta) 0 cos(theta)];
          
+% z rotation alpha
+R_i_c = [cos(alpha) sin(alpha) 0;
+         -sin(alpha) cos(alpha) 0;
+         0 0 1];
+     
+% x rotation beta
+R_c_d = [1 0 0;
+         0 cos(beta) sin(beta);
+         0 -sin(beta) cos(beta)];
+     
+k_i = [0 0 1]';
+
+k_b = R_a_b * R_i_a * k_i;
+k_d = R_c_d * R_i_c * k_i;
+
+y = k_b - k_d;
+
+% answer is to find [psi theta alpha beta] that makes norm(y) = 0
+% ANSWER: y2 == 0
+y2 = simplify(y(1)^2 + y(2)^2 + y(3)^2)
+
+
+
+     
 
 
 
