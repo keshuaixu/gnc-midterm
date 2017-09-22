@@ -2,15 +2,29 @@
 % Keshuai Xu
 
 
-DATA4 = load('acceldata_p4_2017.mat');
+
 
 %% Problem 1
-% 1. ???
+% 1. 3.1623e-14 W*m^(-2)
+%
 % 2. True
+%
 % 3. True
+%
 % 4. False
+%
 % 5. False
-% 6. 
+%
+% 6. [0 0 0]'
+%
+% 7. approx [0 0 2*pi/86400]
+%
+% 8. 6356.752314245 km
+%
+% 9. Proper acceleration in an inertial coordinate system
+%
+% 10. [0 0 0]'
+
 
 %% Problem 2
 % Variable naming conventions: R_subscript_superscript
@@ -90,10 +104,75 @@ rad2deg(y_sim_27(end, :)')
 DATA28 = load('gyrodata_p2_8_2017.mat');
 
 % linear interpolation of the gyro data
-omega_ie_e_fun = @(t) interp1(time_pts', omega_iee', t)';
+omega_ie_e_fun = @(t) interp1(DATA28.time_pts', DATA28.omega_iee', t)';
 
-% TODO: check piazza
-ode45(@(t, y) omega_ie_i_fun(y, omega_ie_e_fun(t)), DATA28.time_pts, deg2rad([5 10 15]'))
+ode45(@(t, y) omega_ie_i_fun(y, omega_ie_e_fun(t)), DATA28.time_pts, [DATA28.psi_0 DATA28.theta_0 DATA28.phi_0]')
+
+% TODO
+
+%% 3
+% TODO add picture
+clear variables
+syms psi gamma psi_d gamma_d airspeed real
+
+R_i_a = [cos(psi) sin(psi) 0;
+         -sin(psi) cos(psi) 0;
+         0 0 1];
+R_a_e = [cos(gamma) 0 -sin(gamma);
+         0 1 0;
+         sin(gamma) 0 cos(gamma)];
+
+omega_ia_a = [0 0 psi_d]';
+omega_ae_e = [0 gamma_d 0]';
+omega_ie_e = R_a_e * omega_ia_a + omega_ae_e;
+
+% @(gamma_d,gamma,psi_d)[-psi_d.*sin(gamma);gamma_d;psi_d.*cos(gamma)]
+omega_ie_e_fun = matlabFunction(omega_ie_e);
+
+R_i_e = R_a_e * R_i_a;
+
+% @(gamma,psi)
+R_i_e_fun = matlabFunction(R_i_e)
+
+
+v_e = [airspeed 0 0]'; 
+v_i = R_i_e' * v_e
+
+% v_dot_i = [0 0 0]'; % body frame acceleration not given in the problem. assume zero
+
+
+% v_dot_e = @(v_dot_i, v_e, euler_angles, ) R_i_e * v_dot_i + omega_
+
+
+%%
+syms a_t a_l real;
+v_dot_e = []
+
+%%
+DATA4 = load('acceldata_p4_2017.mat');
+
+% v_dot_e_fun = @(t) interp1(DATA4.time_pts', DATA4.accel_readings', t)';
+
+omega_ia_i = [0 0 psi_d]';
+omega_ae_a = [0 gamma_d 0]';
+omega_ie_i = omega_ia_i + R_i_a' * omega_ae_a
+
+
+function [t_dot, y_dot] = odefun (t, y)
+    psi = y(2);
+    gamma = y(3);
+    v_dot_e = interp1(DATA4.time_pts', DATA4.accel_readings', t)';
+    
+    
+    
+
+end
+
+% y = []
+
+         
+         
+
 
 
 
