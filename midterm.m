@@ -30,7 +30,7 @@
 % Variable naming conventions: R_subscript_superscript
 % x_d is dx/dt. x_dd is d(x_d)/dt. 
 
-clear variables
+clear variables; close all;
 syms psi theta phi psi_d theta_d phi_d real
 
 %% 2.1
@@ -51,7 +51,7 @@ R_b_e = [cos(phi) sin(phi) 0;
          0 0 1]
 
 %% 2.2
-R_i_e = R_b_e * R_a_b * R_i_a
+R_i_e = R_b_e * R_a_b * R_i_a;
 
 %% 2.3
 % $$\vec{\omega}_{ie}^{e} = R_b^e R_a^b \vec{\omega}_{ia}^{a} + R_b^e \vec{\omega}_{ab}^{b} + I \vec{\omega}_{be}^{e}$$
@@ -81,12 +81,12 @@ omega_ie_i = H_123_e \ omega_ie_e
 % the whole thing
 inv_H123_e = simplify(inv(H_123_e))
 
-% B part of the answer
+% ANSWER - B part of the answer
 B = simplify(inv_H123_e * cos(theta))
 
 
 %% 2.7
-% quantity measured by gyro: $$\vec{\omega}_{ie}^e$$
+% quantity measured by gyro: $\vec{\omega}_{ie}^e$
 
 % convert from symbolic expression to function
 inv_H123_e_fun = matlabFunction(inv_H123_e, 'Vars', [psi theta phi]');
@@ -119,7 +119,6 @@ rad2deg(y_sim28(end, :)')
 
 
 %% 3
-% TODO add picture
 clear variables
 syms psi gamma psi_d gamma_d airspeed airspeed_dot real
 
@@ -140,33 +139,52 @@ omega_ie_e_fun = matlabFunction(omega_ie_e);
 R_i_e = R_a_e * R_i_a;
 
 % @(gamma,psi)
-R_i_e_fun = matlabFunction(R_i_e)
+R_i_e_fun = matlabFunction(R_i_e);
 
 
 v_e = [airspeed 0 0]'; 
-v_i = R_i_e' * v_e
+v_dot_e = [airspeed_dot 0 0]'; 
+v_i = R_i_e' * v_e;
 
-accel_reading_sym = 0 + cross(omega_ie_e, v_e)
-
-% v_dot_i = [0 0 0]'; % body frame acceleration not given in the problem. assume zero
-
-
-% v_dot_e = @(v_dot_i, v_e, euler_angles, ) R_i_e * v_dot_i + omega_
+accel_reading_inertial_sym = v_dot_e + cross(omega_ie_e, v_e)
+% @(airspeed,airspeed_dot,gamma_d,gamma,psi_d)
+accel_reading_inertial_sym_fun = matlabFunction(accel_reading_inertial_sym);
 
 
-%%
+psi_t0 = deg2rad(45);
+gamma_t0 = deg2rad(2);
+psi_dot_t0 = deg2rad(0);
+gamma_dot_t0 = deg2rad(1.5);
+airspeed_t0 = 75; % m/s
+% assume there's no tangential acceleration at this moment, because it's not given in the problem
+airspeed_dot_t0 = 0; 
+
+% ANSWER inertial acceleration (no gravity) from accelerometer
+accel_reading_inertial_num = accel_reading_inertial_sym_fun(airspeed_t0,airspeed_dot_t0,gamma_dot_t0,gamma_t0,psi_dot_t0)
+
+g_i = [0 0 9.81]';
+g_e = R_i_e_fun(gamma_t0, psi_t0) * g_i;
+
+% ANSWER accelerometer reading with gravity
+accel_reading_num = accel_reading_inertial_num - g_e
+
+
+
+
+%% 4
+% 
+%
+% <include>odefun_4.m</include>
+% 
+%
+
 DATA4 = load('acceldata_p4_2017.mat');
-
-% v_dot_e_fun = @(t) interp1(DATA4.time_pts', DATA4.accel_readings', t)';
-
-% omega_ia_i = [0 0 psi_d]';
-% omega_ae_a = [0 gamma_d 0]';
-% omega_ie_i = omega_ia_i + R_i_a' * omega_ae_a
-
 
 gamma_psi_0 = deg2rad([45; 2]);
 p_dot_e_0 = [75 0 0]';
 
+
+% y(9x1) = [airspeed psi gamma p_t(3x1) p_dot_t(3x1)]'
 y0 = [p_dot_e_0(1); gamma_psi_0; DATA4.posn_0; R_i_e_fun(gamma_psi_0(1), gamma_psi_0(2))' * p_dot_e_0];
 
 [t_4, y_4] = ode45(@(t,y) odefun_4(t,y,R_i_e_fun,DATA4),DATA4.time_pts,y0);
@@ -187,6 +205,9 @@ title('heading angle');
 figure();
 plot3(y_4(:,4),y_4(:,5),y_4(:,6));
 title('position trajectory');
+
+% ANSWER final position in m
+p_t60 = y_4(end,4:6)' 
 
 %% 5
 clear variables
