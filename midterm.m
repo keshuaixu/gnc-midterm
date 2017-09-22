@@ -106,9 +106,17 @@ DATA28 = load('gyrodata_p2_8_2017.mat');
 % linear interpolation of the gyro data
 omega_ie_e_fun = @(t) interp1(DATA28.time_pts', DATA28.omega_iee', t)';
 
-ode45(@(t, y) omega_ie_i_fun(y, omega_ie_e_fun(t)), DATA28.time_pts, [DATA28.psi_0 DATA28.theta_0 DATA28.phi_0]')
+[t_sim28, y_sim28] = ode45(@(t, y) omega_ie_i_fun(y, omega_ie_e_fun(t)), DATA28.time_pts, [DATA28.psi_0 DATA28.theta_0 DATA28.phi_0]');
 
-% TODO
+figure();
+plot(t_sim28, rad2deg(y_sim28));
+xlabel('time(sec)');
+ylabel ('angle(deg)');
+legend ('psi','theta','phi');
+
+% ANSWER [psi theta phi]' deg
+rad2deg(y_sim28(end, :)')
+
 
 %% 3
 % TODO add picture
@@ -145,10 +153,6 @@ v_i = R_i_e' * v_e
 
 
 %%
-syms a_t a_l real;
-v_dot_e = []
-
-%%
 DATA4 = load('acceldata_p4_2017.mat');
 
 % v_dot_e_fun = @(t) interp1(DATA4.time_pts', DATA4.accel_readings', t)';
@@ -158,14 +162,17 @@ omega_ae_a = [0 gamma_d 0]';
 omega_ie_i = omega_ia_i + R_i_a' * omega_ae_a
 
 
-function [t_dot, y_dot] = odefun (t, y)
+function y_dot = odefun (t, y)
     psi = y(2);
     gamma = y(3);
-    v_dot_e = interp1(DATA4.time_pts', DATA4.accel_readings', t)';
+    accel_reading = interp1(DATA4.time_pts', DATA4.accel_readings', t)';
+    p_ddot_t = R_i_e_fun(gamma, psi)' * accel_reading;
     
-    
-    
-
+    y_dot = [accel_reading(1,:); 
+        ???;
+        ???;
+        y(7:9,:);
+        p_ddot_t];
 end
 
 % y = []
