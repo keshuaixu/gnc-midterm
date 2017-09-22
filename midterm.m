@@ -121,7 +121,7 @@ rad2deg(y_sim28(end, :)')
 %% 3
 % TODO add picture
 clear variables
-syms psi gamma psi_d gamma_d airspeed real
+syms psi gamma psi_d gamma_d airspeed airspeed_dot real
 
 R_i_a = [cos(psi) sin(psi) 0;
          -sin(psi) cos(psi) 0;
@@ -146,6 +146,8 @@ R_i_e_fun = matlabFunction(R_i_e)
 v_e = [airspeed 0 0]'; 
 v_i = R_i_e' * v_e
 
+accel_reading_sym = 0 + cross(omega_ie_e, v_e)
+
 % v_dot_i = [0 0 0]'; % body frame acceleration not given in the problem. assume zero
 
 
@@ -157,27 +159,36 @@ DATA4 = load('acceldata_p4_2017.mat');
 
 % v_dot_e_fun = @(t) interp1(DATA4.time_pts', DATA4.accel_readings', t)';
 
-omega_ia_i = [0 0 psi_d]';
-omega_ae_a = [0 gamma_d 0]';
-omega_ie_i = omega_ia_i + R_i_a' * omega_ae_a
+% omega_ia_i = [0 0 psi_d]';
+% omega_ae_a = [0 gamma_d 0]';
+% omega_ie_i = omega_ia_i + R_i_a' * omega_ae_a
 
 
-function y_dot = odefun (t, y)
-    psi = y(2);
-    gamma = y(3);
-    accel_reading = interp1(DATA4.time_pts', DATA4.accel_readings', t)';
-    p_ddot_t = R_i_e_fun(gamma, psi)' * accel_reading;
-    
-    y_dot = [accel_reading(1,:); 
-        ???;
-        ???;
-        y(7:9,:);
-        p_ddot_t];
-end
+gamma_psi_0 = deg2rad([45; 2]);
+p_dot_e_0 = [75 0 0]';
 
-% y = []
+y0 = [p_dot_e_0(1); gamma_psi_0; DATA4.posn_0; R_i_e_fun(gamma_psi_0(1), gamma_psi_0(2))' * p_dot_e_0];
 
-         
+[t_4, y_4] = ode45(@(t,y) odefun_4(t,y,R_i_e_fun,DATA4),DATA4.time_pts,y0);
+
+figure();
+plot(t_4, y_4(:,1));
+xlabel('time (sec)');
+ylabel ('airspeed (m/s)');
+title('airspeed');
+
+figure();
+plot(t_4, rad2deg(y_4(:,2:3)));
+xlabel('time (sec)');
+ylabel ('heading angle (deg)');
+legend ('psi','gamma');
+title('heading angle');
+
+figure();
+plot3(y_4(:,4),y_4(:,5),y_4(:,6));
+title('position trajectory');
+
+
          
 
 
